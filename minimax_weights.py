@@ -15,8 +15,8 @@ def main():
     n_x       = 12000                   # total number of points on the x-axis for optimization
     eps_diff  = 10**(-10)
 
-    path_time = "~/11_minimax_python_time/1_other_ranges/alpha_beta_of_N_14"
-    path_freq = "~/12_minimax_python_frequency/1_other_ranges/alpha_beta_of_N_14"
+    path_time = "../11_minimax_python_time/1_other_ranges/alpha_beta_of_N_14"
+    path_freq = "../12_minimax_python_frequency/1_other_ranges/alpha_beta_of_N_14"
 
     desired_ranges_file = "./desired_ranges"
 
@@ -95,7 +95,7 @@ def least_squares(xdata, alphas_time, omega):
     mat_J = np.zeros((n_x_points, n_minimax),dtype=np.float128)
 
     for index_i in range(n_minimax):
-        mat_J[:,index_i] = np.cos(omega*alpha_time[index_i])*np.exp(-xdata*alpha_time[index_i])
+        mat_J[:,index_i] = np.cos(omega*alphas_time[index_i])*np.exp(-xdata*alphas_time[index_i])
 
     vec_v = 2*xdata/(xdata**2+omega**2)
 
@@ -122,10 +122,8 @@ def find_closest_R(n_minimax, R_minimax, path):
         if( R_file == R_minimax ): 
             with open(path+"/"+f) as filetoread:
                 alphas_betas_E = [np.float64(x) for x in filetoread]
-
-    alphas = np.float128(alphas_betas_E[0:n_minimax])
-
-    print("\nR_desired =", R_minimax, "R_file =", R_file, "alphas =", alphas)
+                alphas = np.float128(alphas_betas_E[0:n_minimax])
+                print("\nR_desired =", R_minimax, "R_file =", R_file, "alphas =", alphas)
 
     return alphas
 
