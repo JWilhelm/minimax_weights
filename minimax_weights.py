@@ -103,9 +103,9 @@ def least_squares(xdata, alphas_time, omega):
 
     mat_JTJ = np.dot( np.transpose(mat_J), mat_J )
 
-    mat_for_Gauss = np.zeros((n_x_points, n_minimax+1),dtype=np.float128)
-    mat_for_Gauss[:, 0:n_minimax+1] = mat_JTJ
-    mat_for_Gauss[:, n_minimax+1] = vec_JTv
+    mat_for_Gauss = np.zeros((n_minimax, n_minimax+1),dtype=np.float128)
+    mat_for_Gauss[:, 0:n_minimax] = mat_JTJ
+    mat_for_Gauss[:, n_minimax] = vec_JTv
 
     gamma = gauss(mat_for_Gauss)
 
