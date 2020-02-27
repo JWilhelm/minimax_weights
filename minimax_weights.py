@@ -36,11 +36,11 @@ def main():
        alphas_time = find_closest_R(n_minimax, R_minimax, path_time)
        alphas_freq = find_closest_R(n_minimax, R_minimax, path_freq)
 
-       frequencies = alphas_freq[0:n_minimax+1]
-
        xdata = 10**(np.logspace(0,np.log10(np.log10(R_minimax)+1),n_x,dtype=np.float128))/10
 
-       for omega in frequencies: 
+       gammas = least_squares(xdata, alphas_time, alphas_freq)
+
+       for omega in alphas_freq: 
 
           while (E/E_old < 1-eps_diff or E > E_old):
    
@@ -58,11 +58,6 @@ def main():
      
              gammas = my_fsolve(extrema_x, gammas, alphas_time, alphas_freq)
   
-             break_i = False
-             if(i>500): 
-                 break_i = True
-                 break
-   
        sort_indices = np.argsort(alphas[0:n_minimax])
        num_zeros = 13-len(str(R_minimax))
    
