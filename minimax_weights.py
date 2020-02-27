@@ -42,24 +42,25 @@ def main():
 
           gammas = least_squares(xdata, alphas_time, omega)
 
-          fig1, (axis1) = pl.subplots(1,1)
-          axis1.set_xlim((0.8,R_minimax))
-          axis1.semilogx( xdata, eta(xdata, gammas, alphas_time, omega) )
-#          axis1.semilogx([0.8,R_minimax], [alphas[-1],alphas[-1]])
-#          axis1.semilogx([0.8,R_minimax], [-alphas[-1],-alphas[-1]])
-          pl.show()
-
+          E = 1
+          E_old = 2
 
           while (E/E_old < 1-eps_diff or E > E_old):
    
              E_old = E
   
-             extrema_x = np.append(xdata[0], xdata[argrelextrema(eta(xdata,alphas[0:np.size(alphas)-1]), np.greater)[0]])
-             if np.size(extrema_x) == n_minimax: 
-                extrema_x = np.append(extrema_x, xdata[-1])
-             extrema_x = np.append(extrema_x, xdata[argrelextrema(eta(xdata,alphas[0:np.size(alphas)-1]), np.less)[0]])
+             extrema_x = np.append(xdata[-1], xdata[argrelextrema(eta(xdata, gammas, alphas_time, omega), np.greater)[0]])
+             extrema_x = np.append(extrema_x, xdata[0])
+             extrema_x = np.append(extrema_x, xdata[argrelextrema(eta(xdata, gammas, alphas_time, omega), np.less)[0]])
+
              num_extrema = np.size(extrema_x)
-  
+
+             fig1, (axis1) = pl.subplots(1,1)
+             axis1.set_xlim((0.8,R_minimax))
+             axis1.semilogx( xdata, eta(xdata, gammas, alphas_time, omega) )
+             axis1.semilogx( extrema_x, eta(extrema_x, gammas, alphas_time, omega) , marker="x")
+             pl.show()
+
              E = np.average(np.abs(eta(extrema_x,alphas[0:np.size(alphas)-1])))
              i += 1
              print("iteration =", i, "E =",  E, "Range =", R_minimax)
