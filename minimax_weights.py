@@ -131,6 +131,7 @@ def eta(x, gammas, alphas_time, omega):
 
 #    params_1d = np.transpose(params)[:,0]
 
+    n_minimax = np.size(alphas_time)
     n_x_points = np.size(x)
 
     eta = 2*x/(x**2+omega**2) 
