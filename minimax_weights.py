@@ -40,10 +40,11 @@ def main():
 
        for omega in alphas_freq: 
 
-          gammas = least_squares(xdata, alphas_time, omega)
+          gammas = least_squares(xdata, alphas_time, omega, 0)
 
           E = 1
           E_old = 2
+          i = 0
 
           while (E/E_old < 1-eps_diff or E > E_old):
    
@@ -61,12 +62,13 @@ def main():
              axis1.semilogx( extrema_x, eta(extrema_x, gammas, alphas_time, omega) , marker="x")
              pl.show()
 
-             E = np.average(np.abs(eta(extrema_x,alphas[0:np.size(alphas)-1])))
+             E = np.average(np.abs( eta(extrema_x, gammas, alphas_time, omega) ))
              i += 1
-             print("iteration =", i, "E =",  E, "Range =", R_minimax)
+             print("omega =", omega, "iteration =", i, "E =",  E, "Range =", R_minimax)
      
-             gammas = my_fsolve(extrema_x, gammas, alphas_time, alphas_freq)
-  
+             gammas = least_squares(xdata, alphas_time, omega, E)
+ 
+
        sort_indices = np.argsort(alphas[0:n_minimax])
        num_zeros = 13-len(str(R_minimax))
    
@@ -87,7 +89,7 @@ def main():
            R_minimax = int(R_minimax/1.5)
 
 
-def least_squares(xdata, alphas_time, omega):
+def least_squares(xdata, alphas_time, omega, E):
 
     n_minimax = np.size(alphas_time)
 
