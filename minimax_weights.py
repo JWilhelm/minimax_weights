@@ -38,9 +38,17 @@ def main():
 
        xdata = 10**(np.logspace(0,np.log10(np.log10(R_minimax)+1),n_x,dtype=np.float128))/10
 
-       gammas = least_squares(xdata, alphas_time, alphas_freq)
-
        for omega in alphas_freq: 
+
+          gammas = least_squares(xdata, alphas_time, omega)
+
+          fig1, (axis1) = pl.subplots(1,1)
+          axis1.set_xlim((0.8,R_minimax))
+          axis1.semilogx( xdata, eta(xdata, gammas, alphas_time, omega) )
+#          axis1.semilogx([0.8,R_minimax], [alphas[-1],alphas[-1]])
+#          axis1.semilogx([0.8,R_minimax], [-alphas[-1],-alphas[-1]])
+          pl.show()
+
 
           while (E/E_old < 1-eps_diff or E > E_old):
    
@@ -77,6 +85,33 @@ def main():
        else:
            R_minimax = int(R_minimax/1.5)
 
+
+def least_squares(xdata, alphas_time, omega):
+
+    n_minimax = np.size(alphas_time)
+
+    n_x_points = np.size(xdata)
+
+    mat_J = np.zeros((n_x_points, n_minimax),dtype=np.float128)
+
+    for index_i in range(n_minimax):
+        mat_J[:,index_i] = np.cos(omega*alpha_time[index_i])*np.exp(-xdata*alpha_time[index_i])
+
+    vec_v = 2*xdata/(xdata**2+omega**2)
+
+    vec_JTv = np.dot( np.transpose(mat_J), vec_v )
+
+    mat_JTJ = np.dot( np.transpose(mat_J), mat_J )
+
+    mat_for_Gauss = np.zeros((n_x_points, n_minimax+1),dtype=np.float128)
+    mat_for_Gauss[:, 0:n_minimax+1] = mat_JTJ
+    mat_for_Gauss[:, n_minimax+1] = vec_JTv
+
+    gamma = gauss(mat_for_Gauss)
+
+    return gamma
+
+
 def find_closest_R(n_minimax, R_minimax, path):
 
     files = [f for f in listdir(path) if isfile(join(path, f))]
@@ -94,9 +129,18 @@ def find_closest_R(n_minimax, R_minimax, path):
 
     return alphas
 
-def eta(x, gammas, alphas_time, alphas_freq):
+def eta(x, gammas, alphas_time, omega):
+
 #    params_1d = np.transpose(params)[:,0]
-    return 1/x - (np.exp(-outer(x,params_1d[0:np.size(params)//2]))).dot(params_1d[np.size(params)//2:(np.size(params)//2)*2])
+
+    n_x_points = np.size(x)
+
+    eta = 2*x/(x**2+omega**2) 
+
+    for index_i in range(n_minimax):
+      eta -= gammas[index_i]*np.cos(omega*alphas_time[index_i])*np.exp(-x*alphas_time[index_i])
+
+    return eta
 
 def my_fsolve(extrema_x, alphas):
     size_problem = np.size(alphas)
